@@ -5,7 +5,7 @@ const client = new ApolloClient({
     defaults: {
       auth: {
         __typename: "Auth",
-        isLoggedIn: Boolean(localStorage.getItem("token"))
+        isSignedIn: Boolean(localStorage.getItem("token"))
       }
     },
     resolvers: {
@@ -16,7 +16,7 @@ const client = new ApolloClient({
             data: {
               auth: {
                 __typename: "Auth",
-                isLoggedIn: true
+                isSignedIn: true
               }
             }
           });
@@ -27,7 +27,7 @@ const client = new ApolloClient({
           cache.writeData({
             data: {
               __typename: "Auth",
-              isLoggedIn: false
+              isSignedIn: false
             }
           });
           return null;
