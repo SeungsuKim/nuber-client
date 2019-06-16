@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import React from "react";
 import styled from "src/Styles/styled-components";
 
@@ -25,30 +24,31 @@ const Container = styled.input`
 
 interface IProps {
   placeholder?: string;
-  type: string;
+  type?: string;
   required?: boolean;
   value: any;
+  name?: string;
+  onChange?: (
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => void;
 }
 
 const Input: React.SFC<IProps> = ({
   placeholder = "",
   type = "text",
   required = true,
-  value
+  value,
+  name = "",
+  onChange
 }) => (
   <Container
+    name={name}
     placeholder={placeholder}
     type={type}
     required={required}
     value={value}
+    onChange={onChange}
   />
 );
-
-Input.propTypes = {
-  placeholder: PropTypes.string,
-  required: PropTypes.bool,
-  type: PropTypes.string.isRequired,
-  value: PropTypes.any
-};
 
 export default Input;
