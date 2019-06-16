@@ -1,5 +1,3 @@
-import React from "react";
+import AuthPresenter from "./AuthPresenter";
 
-const Auth = () => <span>Auth</span>;
-
-export default Auth;
+export default AuthPresenter;
