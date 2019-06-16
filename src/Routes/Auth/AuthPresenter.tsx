@@ -1,5 +1,6 @@
 import React from "react";
-import { RouteComponentProps } from "react-router-dom";
+import Helmet from "react-helmet";
+import { Link, RouteComponentProps } from "react-router-dom";
 import bgImage from "src/Images/bg.png";
 import styled from "src/Styles/styled-components";
 
@@ -66,21 +67,28 @@ interface IProps extends RouteComponentProps<any> {}
 
 const AuthPresenter: React.SFC<IProps> = () => (
   <Container>
+    <Helmet>
+      <title>Auth | Nuber</title>
+    </Helmet>
     <Header>
       <Logo>
         <Title>Nuber</Title>
       </Logo>
     </Header>
     <Footer>
-      <PhoneSignIn>
-        <Subtitle>Get moving with Nuber</Subtitle>
-        <FakeInput>
-          🇰🇷 +82 <Grey>Enter your mobile phone number</Grey>
-        </FakeInput>
-      </PhoneSignIn>
-      <SocialSignIn>
-        <SocialLink>Or connect with SNS</SocialLink>
-      </SocialSignIn>
+      <Link to={"/phone-signin"}>
+        <PhoneSignIn>
+          <Subtitle>Get moving with Nuber</Subtitle>
+          <FakeInput>
+            🇰🇷 +82 <Grey>Enter your mobile phone number</Grey>
+          </FakeInput>
+        </PhoneSignIn>
+      </Link>
+      <Link to={"/social-sigin"}>
+        <SocialSignIn>
+          <SocialLink>Or connect with SNS</SocialLink>
+        </SocialSignIn>
+      </Link>
     </Footer>
   </Container>
 );
