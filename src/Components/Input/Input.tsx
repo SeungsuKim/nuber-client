@@ -25,14 +25,30 @@ const Container = styled.input`
 
 interface IProps {
   placeholder?: string;
+  type: string;
+  required?: boolean;
+  value: any;
 }
 
-const Input: React.SFC<IProps> = ({ placeholder }) => (
-  <Container placeholder={placeholder} />
+const Input: React.SFC<IProps> = ({
+  placeholder = "",
+  type = "text",
+  required = true,
+  value
+}) => (
+  <Container
+    placeholder={placeholder}
+    type={type}
+    required={required}
+    value={value}
+  />
 );
 
 Input.propTypes = {
-  placeholder: PropTypes.string
+  placeholder: PropTypes.string,
+  required: PropTypes.bool,
+  type: PropTypes.string.isRequired,
+  value: PropTypes.any
 };
 
 export default Input;

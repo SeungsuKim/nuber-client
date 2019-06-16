@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 import Helmet from "react-helmet";
 import BackArrow from "src/Components/BackArrow";
@@ -53,14 +54,22 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
-const PhoneSignInPresenter = () => (
+interface IProps {
+  countryCode: string;
+  phoneNumber: string;
+}
+
+const PhoneSignInPresenter: React.SFC<IProps> = ({
+  countryCode,
+  phoneNumber
+}) => (
   <Container>
     <Helmet>
       <title>Phone Sign In | Nuber</title>
     </Helmet>
     <EBackArrow backTo={"/"} />
     <Title>Enter your mobile number</Title>
-    <CountrySelect>
+    <CountrySelect value={countryCode}>
       {countries.map((country, index) => (
         <CountryOption key={index} value={country.dial_code}>
           {country.flag} {country.name} ({country.dial_code})
@@ -68,7 +77,7 @@ const PhoneSignInPresenter = () => (
       ))}
     </CountrySelect>
     <Form>
-      <Input placeholder={"10 9196 0940"} />
+      <Input placeholder={"10 9196 0940"} value={phoneNumber} />
       <Button>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -83,5 +92,10 @@ const PhoneSignInPresenter = () => (
     </Form>
   </Container>
 );
+
+PhoneSignInPresenter.propTypes = {
+  countryCode: PropTypes.string.isRequired,
+  phoneNumber: PropTypes.string.isRequired
+};
 
 export default PhoneSignInPresenter;
