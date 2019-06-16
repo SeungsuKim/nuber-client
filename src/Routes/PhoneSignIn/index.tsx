@@ -1,5 +1,3 @@
-import React from "react";
+import PhoneSignInContainer from "./PhoneSignInContainer";
 
-const PhoneSignIn = () => <span>PhoneSignIn</span>;
-
-export default PhoneSignIn;
+export default PhoneSignInContainer;

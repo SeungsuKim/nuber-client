@@ -1,5 +1,3 @@
-import React from "react";
+import SocialSignInContainer from "./SocialSignInContainer";
 
-const SocialSignIn = () => <span>SocialSignIn</span>;
-
-export default SocialSignIn;
+export default SocialSignInContainer;

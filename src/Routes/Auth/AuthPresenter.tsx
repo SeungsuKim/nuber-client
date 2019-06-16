@@ -84,7 +84,7 @@ const AuthPresenter: React.SFC<IProps> = () => (
           </FakeInput>
         </PhoneSignIn>
       </Link>
-      <Link to={"/social-sigin"}>
+      <Link to={"/social-signin"}>
         <SocialSignIn>
           <SocialLink>Or connect with SNS</SocialLink>
         </SocialSignIn>
