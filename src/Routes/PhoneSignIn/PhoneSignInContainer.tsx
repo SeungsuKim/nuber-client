@@ -2,15 +2,15 @@ import React from "react";
 import { Mutation } from "react-apollo";
 import { RouteComponentProps } from "react-router-dom";
 import { toast } from "react-toastify";
+import { StartPhoneVerification, StartPhoneVerificationVariables } from "src/types/api";
 
 import PhoneSignInPresenter from "./PhoneSignInPresenter";
 import { PHONE_SIGN_IN } from "./PhoneSignInQuereis.queries";
 
-interface IMutationInterface {
-  phoneNumber: string;
-}
-
-class PhoneSignInMutation extends Mutation<any, IMutationInterface> {}
+class PhoneSignInMutation extends Mutation<
+  StartPhoneVerification,
+  StartPhoneVerificationVariables
+> {}
 
 interface IState {
   countryCode: string;
@@ -34,11 +34,18 @@ class PhoneSignInContainer extends React.Component<
         variables={{
           phoneNumber: `${countryCode}${phoneNumber}`
         }}
+        onCompleted={data => {
+          const { StartPhoneVerification: response } = data;
+          if (response.ok) {
+            return;
+          } else {
+            toast.error(response.error);
+          }
+        }}
       >
         {(mutation, { loading }) => {
           const onSubmit: React.FormEventHandler<HTMLFormElement> = event => {
             event.preventDefault();
-            const { countryCode, phoneNumber } = this.state;
             const isValid = /^\+[1-9]{1}[0-9]{7,11}$/.test(
               `${countryCode}${phoneNumber}`
             );
