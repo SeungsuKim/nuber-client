@@ -4,7 +4,6 @@
   "private": true,
   "dependencies": {
     "apollo-boost": "^0.4.2",
-    "graphql": "^14.3.1",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-apollo": "^2.5.6",
@@ -21,7 +20,9 @@
     "start": "react-scripts-ts start",
     "build": "react-scripts-ts build",
     "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject"
+    "eject": "react-scripts-ts eject",
+    "precodegen": "apollo schema:download --endpoint=http://localhost:4000/graphql schema.json",
+    "codegen": "apollo codegen:generate src/Types/api.d.ts --queries=src/**/*.queries.ts --addTypename --localSchemaFile=schema.json --target typescript --outputFlat"
   },
   "devDependencies": {
     "@types/jest": "^24.0.14",
@@ -31,6 +32,7 @@
     "@types/react-router-dom": "^4.3.4",
     "@types/react-toastify": "^4.0.2",
     "@types/styled-components": "^4.1.16",
+    "apollo": "^2.13.1",
     "typescript": "^3.5.2"
   }
 }

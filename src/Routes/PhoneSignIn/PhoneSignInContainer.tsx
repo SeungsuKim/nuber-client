@@ -4,7 +4,7 @@ import { RouteComponentProps } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import PhoneSignInPresenter from "./PhoneSignInPresenter";
-import { PHONE_SIGN_IN } from "./PhoneSignInQuereis";
+import { PHONE_SIGN_IN } from "./PhoneSignInQuereis.queries";
 
 interface IMutationInterface {
   phoneNumber: string;
