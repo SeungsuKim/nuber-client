@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "src/Styles/styled-components";
 
-const Container = styled.input`
+const Container = styled.button`
   width: 100%;
   background-color: black;
   color: white;
@@ -28,7 +28,9 @@ interface IProps {
 }
 
 const Button: React.SFC<IProps> = ({ value, onClick, disabled = false }) => (
-  <Container value={value} disabled={disabled} onClick={onClick} />
+  <Container disabled={disabled} onClick={onClick} type={"submit"}>
+    {value}
+  </Container>
 );
 
 export default Button;

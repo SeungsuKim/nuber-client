@@ -7,7 +7,9 @@ import styled from "src/Styles/styled-components";
 
 const Container = styled.div``;
 
-const Form = styled.form``;
+const Form = styled.form`
+  padding: 0px 40px;
+`;
 
 const EInput = styled(Input)`
   margin-bottom: 20px;

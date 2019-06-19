@@ -37,8 +37,17 @@ class PhoneSignInContainer extends React.Component<
         }}
         onCompleted={data => {
           const { StartPhoneVerification: response } = data;
+          const phone = `${countryCode}${phoneNumber}`;
           if (response.ok) {
-            return;
+            toast.success("SMS Sent! Redirecting you...");
+            setTimeout(() => {
+              history.push({
+                pathname: "/verify-phone",
+                state: {
+                  phoneNumber: phone
+                }
+              });
+            }, 1000);
           } else {
             toast.error(response.error);
           }
@@ -52,13 +61,7 @@ class PhoneSignInContainer extends React.Component<
             if (!isValid) {
               toast.error("Phone number is not valid");
             } else {
-              history.push({
-                pathname: "/verify-phone",
-                state: {
-                  phoneNumber: phone
-                }
-              });
-              // mutation();
+              mutation();
             }
           };
           return (
