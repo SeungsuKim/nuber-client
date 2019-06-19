@@ -40,7 +40,7 @@ const SignedOutRoutes: React.SFC = () => (
   <Switch>
     <Route path={"/"} exact={true} component={Auth} />
     <Route path={"/phone-signin"} component={PhoneSignIn} />
-    <Route path={"/verify-phone/:number"} component={VerifyPhone} />
+    <Route path={"/verify-phone"} component={VerifyPhone} />
     <Route path={"/social-signin"} component={SocialSignIn} />
     <Redirect from={"*"} to={"/"} />
   </Switch>

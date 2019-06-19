@@ -1,5 +1,3 @@
-import React from "react";
+import VerifyPhoneContainer from "./VerifyPhoneContainer";
 
-const VerifyPhone = () => <span>VerifyPhone</span>;
-
-export default VerifyPhone;
+export default VerifyPhoneContainer;
