@@ -8,7 +8,7 @@ import { ThemeProvider } from "src/Styles/styled-components";
 import { theme } from "src/Styles/theme";
 
 import AppPresenter from "./AppPresenter";
-import { IS_LOGGED_IN } from "./AppQueries";
+import { IS_LOGGED_IN } from "./AppQueries.local";
 
 const AppContainer = ({ data }) => (
   <>

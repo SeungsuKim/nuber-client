@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { StartPhoneVerification, StartPhoneVerificationVariables } from "src/types/api";
 
 import PhoneSignInPresenter from "./PhoneSignInPresenter";
-import { PHONE_SIGN_IN } from "./PhoneSignInQuereis.queries";
+import { PHONE_SIGN_IN } from "./PhoneSignInQuereis";
 
 class PhoneSignInMutation extends Mutation<
   StartPhoneVerification,
