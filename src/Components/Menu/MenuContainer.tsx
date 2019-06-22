@@ -1,18 +1,34 @@
 import React from "react";
-import { Query } from "react-apollo";
+import { Mutation, Query } from "react-apollo";
 import { USER_PROFILE } from "src/sharedQueries";
-import { userProfile } from "src/types/api";
+import { toogleDriving, userProfile } from "src/types/api";
 
 import MenuPresenter from "./MenuPresenter";
+import { TOOGLE_DRIVING } from "./MenuQueries";
 
 class ProfileQuery extends Query<userProfile> {}
+
+class ToogleDrivingMutation extends Mutation<toogleDriving> {}
 
 class MenuContainer extends React.Component {
   public render() {
     return (
-      <ProfileQuery query={USER_PROFILE}>
-        {({ data, loading }) => <MenuPresenter data={data} loading={loading} />}
-      </ProfileQuery>
+      <ToogleDrivingMutation
+        mutation={TOOGLE_DRIVING}
+        refetchQueries={[{ query: USER_PROFILE }]}
+      >
+        {toogleDrivingFn => (
+          <ProfileQuery query={USER_PROFILE}>
+            {({ data, loading }) => (
+              <MenuPresenter
+                data={data}
+                loading={loading}
+                toogleDrivingFn={toogleDrivingFn}
+              />
+            )}
+          </ProfileQuery>
+        )}
+      </ToogleDrivingMutation>
     );
   }
 }

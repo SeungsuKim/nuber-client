@@ -1,7 +1,8 @@
 import React from "react";
+import { MutationFn } from "react-apollo";
 import { Link } from "react-router-dom";
 import styled from "src/Styles/styled-components";
-import { userProfile } from "src/types/api";
+import { toogleDriving, userProfile } from "src/types/api";
 
 const Container = styled.div`
   height: 100%;
@@ -77,13 +78,15 @@ const ToogleDriving = styled.button<IToogleProps>`
 interface IProps {
   data?: userProfile;
   loading: boolean;
+  toogleDrivingFn: MutationFn<toogleDriving>;
 }
 
 const MenuPresenter: React.SFC<IProps> = ({
   data: { GetMyProfile: { user = null } = { user: null } } = {
     GetMyProfile: { user: null }
   },
-  loading
+  loading,
+  toogleDrivingFn
 }) => {
   return (
     <Container>
@@ -107,7 +110,10 @@ const MenuPresenter: React.SFC<IProps> = ({
           </Header>
           <SLink to={"/trips"}>Your Trips</SLink>
           <SLink to={"/settings"}>Settings</SLink>
-          <ToogleDriving isDriving={user.isDriving}>
+          <ToogleDriving
+            isDriving={user.isDriving}
+            onClick={() => toogleDrivingFn()}
+          >
             {user.isDriving ? "Stop Driving" : "Start Driving"}
           </ToogleDriving>
         </>
