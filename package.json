@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "apollo-boost": "^0.4.2",
+    "axios": "^0.19.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-apollo": "^2.5.6",
@@ -27,6 +28,7 @@
     "codegen": "apollo codegen:generate src/Types/api.d.ts --queries='src/**/!(*.local).ts' --addTypename --localSchemaFile=schema.json --target typescript --outputFlat"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@types/jest": "^24.0.14",
     "@types/node": "^12.0.8",
     "@types/react": "^16.8.20",

@@ -38,6 +38,7 @@ export interface updateProfileVariables {
   firstName: string;
   lastName: string;
   email: string;
+  profilePhoto?: string | null;
 }
 
 /* tslint:disable */
