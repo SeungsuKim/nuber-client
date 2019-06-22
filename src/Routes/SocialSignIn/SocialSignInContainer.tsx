@@ -1,6 +1,7 @@
 import React from "react";
-import { Mutation } from "react-apollo";
+import { Mutation, MutationFn } from "react-apollo";
 import { RouteComponentProps } from "react-router-dom";
+import { toast } from "react-toastify";
 import { FacebookConnect, FacebookConnectVariables } from "src/types/api";
 
 import SocialSignInPresenter from "./SocialSignInPresenter";
@@ -21,24 +22,48 @@ interface IState {
 interface IProps extends RouteComponentProps<any> {}
 
 class SocialSignInContainer extends React.Component<IProps, IState> {
+  public state = {
+    email: "",
+    facebookId: "",
+    firstName: "",
+    lastName: ""
+  };
+
+  public facebookMutation: MutationFn;
+
   public render() {
-    const { firstName, lastName, email, facebookId } = this.state;
     return (
-      <SignInMutation
-        mutation={FACEBOOK_CONNECT}
-        variables={{ firstName, lastName, email, facebookId }}
-      >
-        {(facebookConnect, { loading }) => (
-          <SocialSignInPresenter signInCallback={facebookConnect} />
-        )}
+      <SignInMutation mutation={FACEBOOK_CONNECT}>
+        {(facebookMutation, { loading }) => {
+          this.facebookMutation = facebookMutation;
+          return <SocialSignInPresenter signInCallback={this.callback} />;
+        }}
       </SignInMutation>
     );
   }
 
   public callback = facebookData => {
-    this.setState({
-      email: facebookData.email
-    });
+    const {
+      name,
+      first_name,
+      last_name,
+      email,
+      id,
+      accessToken
+    } = facebookData;
+    if (accessToken) {
+      this.facebookMutation({
+        variables: {
+          email,
+          facebookId: id,
+          firstName: first_name,
+          lastName: last_name
+        }
+      });
+      toast.success(`Welcome ${name}`);
+    } else {
+      toast.error("Could not sign you in");
+    }
   };
 }
 
