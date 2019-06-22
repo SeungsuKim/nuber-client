@@ -2,7 +2,7 @@ import React from "react";
 import { Mutation } from "react-apollo";
 import { RouteComponentProps } from "react-router-dom";
 import { toast } from "react-toastify";
-import { SIGN_USER_IN } from "src/sharedQueries";
+import { SIGN_USER_IN } from "src/sharedQueries.local";
 
 import { VerifyPhone, VerifyPhoneVariables } from "../../types/api";
 import VerifyPhonePresenter from "./VerifyPhonePresenter";
