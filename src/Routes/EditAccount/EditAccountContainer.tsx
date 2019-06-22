@@ -93,10 +93,18 @@ class EditAccountContainer extends React.Component<IProps, IState> {
       formData.append("api_key", "485991553945425");
       formData.append("upload_preset", "nuber-preset");
       formData.append("timestamp", String(Date.now() / 1000));
-      const request = await axios.post(
+      const {
+        data: { secure_url }
+      } = await axios.post(
         "https://api.cloudinary.com/v1_1/nuber/image/upload",
         formData
       );
+      if (secure_url) {
+        this.setState({
+          profilePhoto: secure_url,
+          uploading: false
+        });
+      }
     }
 
     this.setState({

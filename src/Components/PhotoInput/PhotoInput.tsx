@@ -12,7 +12,11 @@ const Input = styled.input`
   }
 `;
 
-const Image = styled.label`
+interface IImageProps {
+  src?: string;
+}
+
+const Image = styled.label<IImageProps>`
   cursor: pointer;
   height: 80px;
   width: 80px;
