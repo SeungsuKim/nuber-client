@@ -26,8 +26,10 @@ const client = new ApolloClient({
           localStorage.removeItem("token");
           cache.writeData({
             data: {
-              __typename: "Auth",
-              isSignedIn: false
+              auth: {
+                __typename: "Auth",
+                isSignedIn: false
+              }
             }
           });
           return null;
