@@ -1,4 +1,5 @@
 import React from "react";
+import { MutationFn } from "react-apollo";
 import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
 import Helmet from "react-helmet";
 import BackArrow from "src/Components/BackArrow";
@@ -30,7 +31,11 @@ const Icon = styled.span`
   margin-right: 10px;
 `;
 
-const SocialSignInPresenter = () => (
+interface IProps {
+  signInCallback: MutationFn;
+}
+
+const SocialSignInPresenter: React.SFC<IProps> = ({ signInCallback }) => (
   <Container>
     <Helmet>
       <title>Social Sign In | Nuber</title>
@@ -41,7 +46,7 @@ const SocialSignInPresenter = () => (
       appId="583019862106038"
       autoLoad={true}
       fields="name,email,picture"
-      callback={null}
+      callback={signInCallback}
       render={renderProps => (
         <Link onClick={renderProps.onClick}>
           <Icon>
