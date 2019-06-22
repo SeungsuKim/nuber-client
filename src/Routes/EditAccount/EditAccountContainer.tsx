@@ -1,3 +1,4 @@
+import axios from "axios";
 import React from "react";
 import { Mutation, Query } from "react-apollo";
 import { RouteComponentProps } from "react-router";
@@ -21,9 +22,7 @@ interface IState {
   email: string;
   profilePhoto?: string;
   loading: boolean;
-  uploaded: boolean;
   uploading: boolean;
-  file?: Blob;
 }
 
 interface IProps extends RouteComponentProps<any> {}
@@ -35,7 +34,6 @@ class EditAccountContainer extends React.Component<IProps, IState> {
     lastName: "",
     loading: false,
     profilePhoto: "",
-    uploaded: false,
     uploading: false
   };
 
@@ -79,15 +77,26 @@ class EditAccountContainer extends React.Component<IProps, IState> {
     );
   }
 
-  public onInputChange: React.ChangeEventHandler<HTMLInputElement> = event => {
+  public onInputChange: React.ChangeEventHandler<
+    HTMLInputElement
+  > = async event => {
     const {
       target: { name, value, files }
     } = event;
 
     if (files) {
       this.setState({
-        file: files[0]
+        uploading: true
       });
+      const formData = new FormData();
+      formData.append("file", files[0]);
+      formData.append("api_key", "485991553945425");
+      formData.append("upload_preset", "nuber-preset");
+      formData.append("timestamp", String(Date.now() / 1000));
+      const request = await axios.post(
+        "https://api.cloudinary.com/v1_1/nuber/image/upload",
+        formData
+      );
     }
 
     this.setState({
@@ -106,8 +115,7 @@ class EditAccountContainer extends React.Component<IProps, IState> {
           email,
           firstName,
           lastName,
-          profilePhoto,
-          uploading: profilePhoto !== null
+          profilePhoto
         } as any);
       }
     }
