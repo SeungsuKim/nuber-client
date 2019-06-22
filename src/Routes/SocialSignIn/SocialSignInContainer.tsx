@@ -2,6 +2,7 @@ import React from "react";
 import { Mutation, MutationFn } from "react-apollo";
 import { RouteComponentProps } from "react-router-dom";
 import { toast } from "react-toastify";
+import { SIGN_USER_IN } from "src/sharedQueries.local";
 import { FacebookConnect, FacebookConnectVariables } from "src/types/api";
 
 import SocialSignInPresenter from "./SocialSignInPresenter";
@@ -33,12 +34,26 @@ class SocialSignInContainer extends React.Component<IProps, IState> {
 
   public render() {
     return (
-      <SignInMutation mutation={FACEBOOK_CONNECT}>
-        {(facebookMutation, { loading }) => {
-          this.facebookMutation = facebookMutation;
-          return <SocialSignInPresenter signInCallback={this.callback} />;
-        }}
-      </SignInMutation>
+      <Mutation mutation={SIGN_USER_IN}>
+        {signUserIn => (
+          <SignInMutation
+            mutation={FACEBOOK_CONNECT}
+            onCompleted={data => {
+              const { FacebookConnect: response } = data;
+              if (response.ok) {
+                signUserIn({ variables: { token: response.token } });
+              } else {
+                toast.error(response.error);
+              }
+            }}
+          >
+            {(facebookMutation, { loading }) => {
+              this.facebookMutation = facebookMutation;
+              return <SocialSignInPresenter signInCallback={this.callback} />;
+            }}
+          </SignInMutation>
+        )}
+      </Mutation>
     );
   }
 
