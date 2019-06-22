@@ -1560,7 +1560,7 @@
             "deprecationReason": null
           },
           {
-            "name": "erro",
+            "name": "error",
             "description": "",
             "args": [],
             "type": {
