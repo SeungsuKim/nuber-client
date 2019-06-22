@@ -39,24 +39,27 @@ const EditAccountPresenter: React.SFC<IProps> = ({
       <title>Edit Account | Nuber</title>
     </Helmet>
     <Header title={"Edit Account"} backTo={"/"} />
-    <ExtendedForm submitFn={null}>
+    <ExtendedForm submitFn={onSubmit}>
       <ExtendedInput
         onChange={onInputChange}
         type={"text"}
         value={firstName}
         placeholder={"First name"}
+        name={"firstName"}
       />
       <ExtendedInput
         onChange={onInputChange}
         type={"text"}
         value={lastName}
         placeholder={"Last name"}
+        name={"lastName"}
       />
       <ExtendedInput
         onChange={onInputChange}
         type={"email"}
         value={email}
         placeholder={"Email"}
+        name={"email"}
       />
       <Button onClick={onSubmit} value={loading ? "Loading" : "Update"} />
     </ExtendedForm>
