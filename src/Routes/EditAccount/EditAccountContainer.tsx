@@ -1,10 +1,13 @@
 import React from "react";
-import { Mutation } from "react-apollo";
+import { Mutation, Query } from "react-apollo";
 import { RouteComponentProps } from "react-router";
-import { updateProfile, updateProfileVariables } from "src/types/api";
+import { USER_PROFILE } from "src/sharedQueries";
+import { updateProfile, updateProfileVariables, userProfile } from "src/types/api";
 
 import EditAccountPresenter from "./EditAccountPresenter";
 import { UPDATE_PROFILE } from "./EditAccountQueries";
+
+class ProfileQuery extends Query<userProfile> {}
 
 class UpdateProfileMutation extends Mutation<
   updateProfile,
@@ -31,21 +34,28 @@ class EditAccountContainer extends React.Component<IProps, IState> {
   public render() {
     const { email, firstName, lastName } = this.state;
     return (
-      <UpdateProfileMutation
-        mutation={UPDATE_PROFILE}
-        variables={{ firstName, lastName, email }}
+      <ProfileQuery
+        query={USER_PROFILE}
+        onCompleted={data => this.updateFields(data)}
       >
-        {(updateProfileFn, { loading }) => (
-          <EditAccountPresenter
-            email={email}
-            firstName={firstName}
-            lastName={lastName}
-            onSubmit={updateProfileFn}
-            onInputChange={this.onInputChange}
-            loading={loading}
-          />
+        {() => (
+          <UpdateProfileMutation
+            mutation={UPDATE_PROFILE}
+            variables={{ firstName, lastName, email }}
+          >
+            {(updateProfileFn, { loading }) => (
+              <EditAccountPresenter
+                email={email}
+                firstName={firstName}
+                lastName={lastName}
+                onSubmit={updateProfileFn}
+                onInputChange={this.onInputChange}
+                loading={loading}
+              />
+            )}
+          </UpdateProfileMutation>
         )}
-      </UpdateProfileMutation>
+      </ProfileQuery>
     );
   }
 
@@ -57,6 +67,22 @@ class EditAccountContainer extends React.Component<IProps, IState> {
     this.setState({
       [name]: value
     } as any);
+  };
+
+  public updateFields = (
+    data: userProfile | { GetMyProfile: { user: null } }
+  ) => {
+    const {
+      GetMyProfile: { user }
+    } = data;
+    if (user) {
+      const { firstName, lastName, email } = user;
+      if (email) {
+        this.setState({ firstName, lastName, email });
+      } else {
+        this.setState({ firstName, lastName });
+      }
+    }
   };
 }
 

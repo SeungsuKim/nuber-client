@@ -123,7 +123,10 @@ export interface VerifyPhoneVariables {
 export interface userProfile_GetMyProfile_user {
   __typename: "User";
   profilePhoto: string | null;
+  firstName: string;
+  lastName: string;
   fullName: string | null;
+  email: string | null;
   isDriving: boolean;
 }
 
