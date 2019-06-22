@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import styled from "src/Styles/styled-components";
+import { userProfile } from "src/types/api";
 
 const Container = styled.div`
   height: 100%;
@@ -73,29 +74,46 @@ const ToogleDriving = styled.button<IToogleProps>`
   cursor: pointer;
 `;
 
-const MenuPresenter: React.SFC = () => (
-  <Container>
-    <Header>
-      <Grid>
-        <Link to={"/edit-account"}>
-          <Image
-            src={
-              "https://pbs.twimg.com/profile_images/1111556029685207041/RPPY0j_N.png"
-            }
-          />
-        </Link>
-        <Text>
-          <Name>Seungsu Kim</Name>
-          <Rating>4.5</Rating>
-        </Text>
-      </Grid>
-    </Header>
-    <SLink to={"/trips"}>Your Trips</SLink>
-    <SLink to={"/settings"}>Settings</SLink>
-    <ToogleDriving isDriving={false}>
-      {false ? "Stop Driving" : "Start Driving"}
-    </ToogleDriving>
-  </Container>
-);
+interface IProps {
+  data?: userProfile;
+  loading: boolean;
+}
+
+const MenuPresenter: React.SFC<IProps> = ({
+  data: { GetMyProfile: { user = null } = { user: null } } = {
+    GetMyProfile: { user: null }
+  },
+  loading
+}) => {
+  return (
+    <Container>
+      {!loading && user && user.fullName && (
+        <>
+          <Header>
+            <Grid>
+              <Link to={"/edit-account"}>
+                <Image
+                  src={
+                    user.profilePhoto ||
+                    "https://ww.namu.la/s/34f4f86a25e4f020f4f2df539231f36df7e209a1c08137102b7bf3eb9a884b270273333c6a3e576d2a0ddf7ac4e0f782de5319f1eef41d42f4a0b170156150f0ad3d3c1f1006cc38bb3fc042fa84f74d8a404494f581ff6d5f8724fca50349da"
+                  }
+                />
+              </Link>
+              <Text>
+                <Name>{user.fullName}</Name>
+                <Rating>4.5</Rating>
+              </Text>
+            </Grid>
+          </Header>
+          <SLink to={"/trips"}>Your Trips</SLink>
+          <SLink to={"/settings"}>Settings</SLink>
+          <ToogleDriving isDriving={user.isDriving}>
+            {user.isDriving ? "Stop Driving" : "Start Driving"}
+          </ToogleDriving>
+        </>
+      )}
+    </Container>
+  );
+};
 
 export default MenuPresenter;
