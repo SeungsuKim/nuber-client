@@ -5,3 +5,9 @@ export const SIGN_USER_IN = gql`
     signUserIn(token: $token) @client
   }
 `;
+
+export const SIGN_USER_OUT = gql`
+  mutation signUserOut {
+    signUserOut @client
+  }
+`;
