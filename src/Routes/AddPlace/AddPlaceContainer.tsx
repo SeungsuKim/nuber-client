@@ -22,8 +22,8 @@ interface IProps extends RouteComponentProps<any> {}
 class AddPlaceContainer extends React.Component<IProps, IState> {
   public state = {
     address: "",
-    lat: 1.23,
-    lng: 1.23,
+    lat: 0,
+    lng: 0,
     name: ""
   };
 
@@ -60,6 +60,7 @@ class AddPlaceContainer extends React.Component<IProps, IState> {
             onInputChange={this.onInputChange}
             loading={loading}
             onSubmit={addPlaceFn}
+            pickedAddress={lat !== 0 && lng !== 0}
           />
         )}
       </AddPlaceMutation>
