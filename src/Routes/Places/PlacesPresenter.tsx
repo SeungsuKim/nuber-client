@@ -30,9 +30,8 @@ const PlacesPresenter: React.SFC<IProps> = ({ data, loading }) => (
         data &&
         data.GetMyPlaces &&
         data.GetMyPlaces.places &&
-        data.GetMyPlaces.places.length === 0 && (
-          <SLink to={"/add-place"}>Please add some places!</SLink>
-        )}
+        data.GetMyPlaces.places.length === 0 &&
+        "You have no places"}
       {!loading &&
         data &&
         data.GetMyPlaces &&
@@ -45,6 +44,7 @@ const PlacesPresenter: React.SFC<IProps> = ({ data, loading }) => (
             address={place!.address}
           />
         ))}
+      <SLink to={"/add-place"}>Add some places!</SLink>
     </Container>
   </>
 );
