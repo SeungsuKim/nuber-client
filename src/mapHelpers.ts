@@ -1,8 +1,6 @@
 import Geocode from "react-geocode";
 
-import { MAPS_KEY } from "./keys";
-
-Geocode.setApiKey(MAPS_KEY);
+Geocode.setApiKey(process.env.REACT_APP_MAPS_KEY);
 
 export const geoCode = () => null;
 
