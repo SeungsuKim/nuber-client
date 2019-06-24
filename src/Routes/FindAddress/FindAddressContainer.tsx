@@ -65,14 +65,15 @@ class FindAddressContainer extends React.Component<IProps, IState> {
     this.map.addListener("dragend", this.handleDragEnd);
   };
 
-  public handleDragEnd = () => {
+  public handleDragEnd = async () => {
     const newCenter = this.map.getCenter();
     const { lat, lng } = newCenter;
+    const reversedAddress = await reverseGeoCode(lat(), lng());
     this.setState({
+      address: reversedAddress,
       lat: lat(),
       lng: lng()
     });
-    reverseGeoCode(lat(), lng());
   };
 
   public handleGeoSuccess = (position: Position) => {
