@@ -68,7 +68,7 @@ const HomePresenter: React.SFC<IProps> = ({
       open={isMenuOpen}
       onSetOpen={toogleMenu}
       styles={{
-        sidebar: { width: "80%", backgroundColor: "white", zIndex: "10" }
+        sidebar: { width: "80%", backgroundColor: "white", zIndex: "11" }
       }}
     >
       {!loading && <MenuButton onClick={() => toogleMenu()}>|||</MenuButton>}

@@ -29,6 +29,7 @@ class HomeContainer extends React.Component<IProps, IState> {
   public map: google.maps.Map;
   public userMarker: google.maps.Marker;
   public toMarker: google.maps.Marker;
+  public directions: google.maps.DirectionsRenderer;
 
   public state = {
     isMenuOpen: false,
@@ -89,7 +90,6 @@ class HomeContainer extends React.Component<IProps, IState> {
       },
       disableDefaultUI: true,
       maxZoom: 17,
-      minZoom: 10,
       zoom: 13
     };
     this.map = new maps.Map(mapNode, mapConfig);
@@ -142,6 +142,20 @@ class HomeContainer extends React.Component<IProps, IState> {
     toast.error("Error while watching you");
   };
 
+  public createPath = () => {
+    const { toLat, toLng, lat, lng } = this.state;
+    if (this.directions) {
+      this.directions.setMap(null);
+    }
+    const renderOptions: google.maps.DirectionsRendererOptions = {
+      polylineOptions: {
+        strokeColor: "#000"
+      },
+      suppressMarkers: true
+    };
+    const directionService: google.maps.DirectionsService = new google.maps.DirectionsService();
+  };
+
   public onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const {
       target: { name, value }
@@ -158,11 +172,6 @@ class HomeContainer extends React.Component<IProps, IState> {
     const result = await geoCode(toAddress);
     if (result) {
       const { lat, lng, formatted_address: formatedAddress } = result;
-      this.setState({
-        toAddress: formatedAddress,
-        toLat: lat,
-        toLng: lng
-      });
       if (this.toMarker) {
         this.toMarker.setMap(null);
       }
@@ -171,6 +180,18 @@ class HomeContainer extends React.Component<IProps, IState> {
       };
       this.toMarker = new maps.Marker(toMarkerOptions);
       this.toMarker.setMap(this.map);
+      const bounds = new maps.LatLngBounds();
+      bounds.extend({ lat: this.state.lat, lng: this.state.lng });
+      bounds.extend({ lat, lng });
+      this.map.fitBounds(bounds);
+      this.setState(
+        {
+          toAddress: formatedAddress,
+          toLat: lat,
+          toLng: lng
+        },
+        this.createPath
+      );
     }
   };
 }
