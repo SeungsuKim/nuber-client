@@ -16,6 +16,8 @@ interface IProps extends RouteComponentProps<any> {
 }
 
 interface IState {
+  distance: string;
+  duration: string;
   isMenuOpen: boolean;
   lat: number;
   lng: number;
@@ -32,6 +34,8 @@ class HomeContainer extends React.Component<IProps, IState> {
   public directions: google.maps.DirectionsRenderer;
 
   public state = {
+    distance: "",
+    duration: "",
     isMenuOpen: false,
     lat: 0,
     lng: 0,
@@ -153,7 +157,29 @@ class HomeContainer extends React.Component<IProps, IState> {
       },
       suppressMarkers: true
     };
-    const directionService: google.maps.DirectionsService = new google.maps.DirectionsService();
+    this.directions = new google.maps.DirectionsRenderer(renderOptions);
+    const directionsService: google.maps.DirectionsService = new google.maps.DirectionsService();
+    const to = new google.maps.LatLng({ lat: toLat, lng: toLng });
+    const from = new google.maps.LatLng({ lat, lng });
+    const directionsOptions: google.maps.DirectionsRequest = {
+      destination: to,
+      origin: from,
+      travelMode: google.maps.TravelMode.TRANSIT
+    };
+    directionsService.route(directionsOptions, (result, status) => {
+      if (status === google.maps.DirectionsStatus.OK) {
+        const { routes } = result;
+        const {
+          distance: { text: distance },
+          duration: { text: duration }
+        } = routes[0].legs[0];
+        this.setState({ distance, duration });
+        this.directions.setDirections(result);
+        this.directions.setMap(this.map);
+      } else {
+        toast.error("There is no route there.");
+      }
+    });
   };
 
   public onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
