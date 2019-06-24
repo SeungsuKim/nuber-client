@@ -97,7 +97,7 @@ class HomeContainer extends React.Component<IProps, IState> {
     const watchOptions: PositionOptions = {
       enableHighAccuracy: true
     };
-    navigator.geolocation.watchPosition(
+    navigator.geolocation.getCurrentPosition(
       this.handleGeoWatchSucess,
       this.handleGeoWatchError,
       watchOptions
@@ -120,7 +120,11 @@ class HomeContainer extends React.Component<IProps, IState> {
   };
 
   public handleGeoWatchSucess = (position: Position) => {
-    return;
+    const {
+      coords: { latitude, longitude }
+    } = position;
+    this.userMarker.setPosition({ lat: latitude, lng: longitude });
+    this.map.panTo({ lat: latitude, lng: longitude });
   };
 
   public handleGeoWatchError = () => {
