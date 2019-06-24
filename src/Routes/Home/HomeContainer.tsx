@@ -5,7 +5,7 @@ import { RouteComponentProps } from "react-router-dom";
 import { toast } from "react-toastify";
 import { geoCode } from "src/mapHelpers";
 import { USER_PROFILE } from "src/sharedQueries";
-import { reportMovement, reportMovementVariables, userProfile } from "src/types/api";
+import { getDrivers, reportMovement, reportMovementVariables, userProfile } from "src/types/api";
 
 import HomePresenter from "./HomePresenter";
 import { GET_NEARBY_DRIVERS, REPORT_LOCATION } from "./HomeQueries";
@@ -66,23 +66,35 @@ class HomeContainer extends React.Component<IProps, IState> {
     const { isMenuOpen, toAddress, price } = this.state;
     return (
       <ProfileQuery query={USER_PROFILE}>
-        {({ data, loading }) => (
-          <DriversQuery query={GET_NEARBY_DRIVERS}>
-            {() => (
-              <HomePresenter
-                isMenuOpen={isMenuOpen}
-                toogleMenu={this.toogleMenu}
-                data={data}
-                loading={loading}
-                mapRef={this.mapRef}
-                toAddress={toAddress}
-                onInputChange={this.onInputChange}
-                onAddressSubmit={this.onAddressSubmit}
-                price={price}
-              />
-            )}
-          </DriversQuery>
-        )}
+        {({ data, loading }) => {
+          if (data && data.GetMyProfile && data.GetMyProfile.user) {
+            const {
+              GetMyProfile: { user }
+            } = data;
+            return (
+              <DriversQuery
+                query={GET_NEARBY_DRIVERS}
+                skip={user.isDriving}
+                onCompleted={this.handleNearbyDrivers}
+              >
+                {() => (
+                  <HomePresenter
+                    isMenuOpen={isMenuOpen}
+                    toogleMenu={this.toogleMenu}
+                    data={data}
+                    loading={loading}
+                    mapRef={this.mapRef}
+                    toAddress={toAddress}
+                    onInputChange={this.onInputChange}
+                    onAddressSubmit={this.onAddressSubmit}
+                    price={price}
+                  />
+                )}
+              </DriversQuery>
+            );
+          }
+          return "Loading";
+        }}
       </ProfileQuery>
     );
   }
@@ -175,6 +187,18 @@ class HomeContainer extends React.Component<IProps, IState> {
       this.directions.setMap(this.map);
     } else {
       toast.error("There is no route there.");
+    }
+  };
+
+  public handleNearbyDrivers = (data: getDrivers) => {
+    if (data.GetNearbyDrivers) {
+      const {
+        GetNearbyDrivers: { ok, drivers }
+      } = data;
+      if (ok && drivers) {
+        // tslint:disable-next-line
+        console.log(drivers);
+      }
     }
   };
 

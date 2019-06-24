@@ -30,6 +30,7 @@ const Image = styled.img`
   background-color: grey;
   border-radius: 50%;
   overflow: hidden;
+  object-fit: cover;
 `;
 
 const Text = styled.span`
