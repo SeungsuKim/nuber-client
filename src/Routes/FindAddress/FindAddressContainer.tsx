@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { RouteComponentProps } from "react-router";
-import { reverseGeoCode } from "src/mapHelpers";
+import { geoCode, reverseGeoCode } from "src/mapHelpers";
 
 import FindAddressPresenter from "./FindAddressPresenter";
 
@@ -65,15 +65,25 @@ class FindAddressContainer extends React.Component<IProps, IState> {
     this.map.addListener("dragend", this.handleDragEnd);
   };
 
+  public reverseGeocodeAddress = async (lat: number, lng: number) => {
+    const reversedAddress = await reverseGeoCode(lat, lng);
+    if (reversedAddress === false) {
+      return;
+    }
+    this.setState({
+      address: reversedAddress
+    });
+  };
+
   public handleDragEnd = async () => {
     const newCenter = this.map.getCenter();
-    const { lat, lng } = newCenter;
-    const reversedAddress = await reverseGeoCode(lat(), lng());
+    const lat = newCenter.lat();
+    const lng = newCenter.lng();
     this.setState({
-      address: reversedAddress,
-      lat: lat(),
-      lng: lng()
+      lat,
+      lng
     });
+    this.reverseGeocodeAddress(lat, lng);
   };
 
   public handleGeoSuccess = (position: Position) => {
@@ -85,6 +95,7 @@ class FindAddressContainer extends React.Component<IProps, IState> {
       lng
     });
     this.loadMap(lat, lng);
+    this.reverseGeocodeAddress(lat, lng);
   };
 
   public handleGeoError = () => {
@@ -101,8 +112,8 @@ class FindAddressContainer extends React.Component<IProps, IState> {
   };
 
   public onInputBlur = () => {
-    // tslint:disable-next-line
-    console.log("Address updated");
+    const { address } = this.state;
+    geoCode(address);
   };
 }
 
