@@ -27,6 +27,17 @@ class AddPlaceContainer extends React.Component<IProps, IState> {
     name: ""
   };
 
+  constructor(props: IProps) {
+    super(props);
+    const { location: { state = {} } = {} } = props;
+    this.state = {
+      address: state.address || "",
+      lat: state.lat || 0,
+      lng: state.lng || 0,
+      name: ""
+    };
+  }
+
   public render() {
     const { history } = this.props;
     const { address, name, lat, lng } = this.state;

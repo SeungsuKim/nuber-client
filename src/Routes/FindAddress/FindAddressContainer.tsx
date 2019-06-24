@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { RouteComponentProps } from "react-router";
+import { RouteComponentProps } from "react-router-dom";
 import { geoCode, reverseGeoCode } from "src/mapHelpers";
 
 import FindAddressPresenter from "./FindAddressPresenter";
@@ -45,6 +45,7 @@ class FindAddressContainer extends React.Component<IProps, IState> {
         address={address}
         onInputBlur={this.onInputBlur}
         onInputChange={this.onInputChange}
+        onPickPlace={this.onPickPlace}
       />
     );
   }
@@ -121,6 +122,19 @@ class FindAddressContainer extends React.Component<IProps, IState> {
       this.setState({ lat, lng, address: formatted_address });
       this.map.panTo({ lat, lng });
     }
+  };
+
+  public onPickPlace = () => {
+    const { address, lat, lng } = this.state;
+    const { history } = this.props;
+    history.push({
+      pathname: "/add-place",
+      state: {
+        address,
+        lat,
+        lng
+      }
+    });
   };
 }
 
