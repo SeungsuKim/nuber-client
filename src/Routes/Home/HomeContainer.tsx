@@ -16,14 +16,15 @@ interface IProps extends RouteComponentProps<any> {
 }
 
 interface IState {
-  distance: string;
-  duration: string;
+  distance?: string;
+  duration?: string;
   isMenuOpen: boolean;
   lat: number;
   lng: number;
   toAddress: string;
   toLat: number;
   toLng: number;
+  price?: number;
 }
 
 class HomeContainer extends React.Component<IProps, IState> {
@@ -39,6 +40,7 @@ class HomeContainer extends React.Component<IProps, IState> {
     isMenuOpen: false,
     lat: 0,
     lng: 0,
+    price: undefined,
     toAddress: "",
     toLat: 0,
     toLng: 0
@@ -57,7 +59,7 @@ class HomeContainer extends React.Component<IProps, IState> {
   }
 
   public render() {
-    const { isMenuOpen, toAddress } = this.state;
+    const { isMenuOpen, toAddress, price } = this.state;
     return (
       <ProfileQuery query={USER_PROFILE}>
         {({ loading }) => (
@@ -69,6 +71,7 @@ class HomeContainer extends React.Component<IProps, IState> {
             toAddress={toAddress}
             onInputChange={this.onInputChange}
             onAddressSubmit={this.onAddressSubmit}
+            price={price}
           />
         )}
       </ProfileQuery>
@@ -146,6 +149,24 @@ class HomeContainer extends React.Component<IProps, IState> {
     toast.error("Error while watching you");
   };
 
+  public handleRouteRequest = (
+    result: google.maps.DirectionsResult,
+    status: google.maps.DirectionsStatus
+  ) => {
+    if (status === google.maps.DirectionsStatus.OK) {
+      const { routes } = result;
+      const {
+        distance: { text: distance },
+        duration: { text: duration }
+      } = routes[0].legs[0];
+      this.setState({ distance, duration }, this.setPrice);
+      this.directions.setDirections(result);
+      this.directions.setMap(this.map);
+    } else {
+      toast.error("There is no route there.");
+    }
+  };
+
   public createPath = () => {
     const { toLat, toLng, lat, lng } = this.state;
     if (this.directions) {
@@ -166,20 +187,16 @@ class HomeContainer extends React.Component<IProps, IState> {
       origin: from,
       travelMode: google.maps.TravelMode.TRANSIT
     };
-    directionsService.route(directionsOptions, (result, status) => {
-      if (status === google.maps.DirectionsStatus.OK) {
-        const { routes } = result;
-        const {
-          distance: { text: distance },
-          duration: { text: duration }
-        } = routes[0].legs[0];
-        this.setState({ distance, duration });
-        this.directions.setDirections(result);
-        this.directions.setMap(this.map);
-      } else {
-        toast.error("There is no route there.");
-      }
-    });
+    directionsService.route(directionsOptions, this.handleRouteRequest);
+  };
+
+  public setPrice = () => {
+    const { distance } = this.state;
+    if (distance) {
+      this.setState({
+        price: parseFloat(distance.replace(",", "")) * 3
+      });
+    }
   };
 
   public onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
