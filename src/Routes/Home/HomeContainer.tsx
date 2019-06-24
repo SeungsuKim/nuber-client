@@ -3,6 +3,7 @@ import { Query } from "react-apollo";
 import ReactDOM from "react-dom";
 import { RouteComponentProps } from "react-router-dom";
 import { toast } from "react-toastify";
+import { geoCode } from "src/mapHelpers";
 import { USER_PROFILE } from "src/sharedQueries";
 import { userProfile } from "src/types/api";
 
@@ -18,17 +19,24 @@ interface IState {
   isMenuOpen: boolean;
   lat: number;
   lng: number;
+  toAddress: string;
+  toLat: number;
+  toLng: number;
 }
 
 class HomeContainer extends React.Component<IProps, IState> {
   public mapRef: any;
   public map: google.maps.Map;
   public userMarker: google.maps.Marker;
+  public toMarker: google.maps.Marker;
 
   public state = {
     isMenuOpen: false,
     lat: 0,
-    lng: 0
+    lng: 0,
+    toAddress: "",
+    toLat: 0,
+    toLng: 0
   };
 
   constructor(props) {
@@ -44,7 +52,7 @@ class HomeContainer extends React.Component<IProps, IState> {
   }
 
   public render() {
-    const { isMenuOpen } = this.state;
+    const { isMenuOpen, toAddress } = this.state;
     return (
       <ProfileQuery query={USER_PROFILE}>
         {({ loading }) => (
@@ -53,6 +61,9 @@ class HomeContainer extends React.Component<IProps, IState> {
             toogleMenu={this.toogleMenu}
             loading={loading}
             mapRef={this.mapRef}
+            toAddress={toAddress}
+            onInputChange={this.onInputChange}
+            onAddressSubmit={this.onAddressSubmit}
           />
         )}
       </ProfileQuery>
@@ -79,7 +90,7 @@ class HomeContainer extends React.Component<IProps, IState> {
       disableDefaultUI: true,
       maxZoom: 17,
       minZoom: 10,
-      zoom: 15
+      zoom: 13
     };
     this.map = new maps.Map(mapNode, mapConfig);
     const userMarkerOptions: google.maps.MarkerOptions = {
@@ -129,6 +140,38 @@ class HomeContainer extends React.Component<IProps, IState> {
 
   public handleGeoWatchError = () => {
     toast.error("Error while watching you");
+  };
+
+  public onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const {
+      target: { name, value }
+    } = event;
+    this.setState({
+      [name]: value
+    } as any);
+  };
+
+  public onAddressSubmit = async () => {
+    const { toAddress } = this.state;
+    const { google } = this.props;
+    const maps = google.maps;
+    const result = await geoCode(toAddress);
+    if (result) {
+      const { lat, lng, formatted_address: formatedAddress } = result;
+      this.setState({
+        toAddress: formatedAddress,
+        toLat: lat,
+        toLng: lng
+      });
+      if (this.toMarker) {
+        this.toMarker.setMap(null);
+      }
+      const toMarkerOptions: google.maps.MarkerOptions = {
+        position: { lat, lng }
+      };
+      this.toMarker = new maps.Marker(toMarkerOptions);
+      this.toMarker.setMap(this.map);
+    }
   };
 }
 

@@ -22,7 +22,7 @@ const Container = styled.input`
 interface IProps {
   value: string;
   name: string;
-  onBlur: () => void;
+  onBlur?: () => void;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 

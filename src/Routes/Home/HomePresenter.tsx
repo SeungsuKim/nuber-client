@@ -1,6 +1,8 @@
 import React from "react";
 import Helmet from "react-helmet";
 import Sidebar from "react-sidebar";
+import AddressBar from "src/Components/AddressBar";
+import Button from "src/Components/Button";
 import Menu from "src/Components/Menu";
 import styled from "src/Styles/styled-components";
 
@@ -12,7 +14,7 @@ const Map = styled.div`
   width: 100%;
 `;
 
-const Button = styled.button`
+const MenuButton = styled.button`
   appearance: none;
   padding: 10px;
   position: absolute;
@@ -27,18 +29,35 @@ const Button = styled.button`
   background-color: transparent;
 `;
 
+const ExtendedButton = styled(Button)`
+  position: absolute;
+  bottom: 50px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  z-index: 10;
+  height: auto;
+  width: 80%;
+`;
+
 interface IProps {
   isMenuOpen: boolean;
   toogleMenu: () => void;
   loading: boolean;
   mapRef: any;
+  toAddress: string;
+  onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onAddressSubmit: () => void;
 }
 
 const HomePresenter: React.SFC<IProps> = ({
   isMenuOpen,
   toogleMenu,
   loading,
-  mapRef
+  mapRef,
+  toAddress,
+  onInputChange,
+  onAddressSubmit
 }) => (
   <Container>
     <Helmet>
@@ -52,7 +71,13 @@ const HomePresenter: React.SFC<IProps> = ({
         sidebar: { width: "80%", backgroundColor: "white", zIndex: "10" }
       }}
     >
-      {!loading && <Button onClick={() => toogleMenu()}>|||</Button>}
+      {!loading && <MenuButton onClick={() => toogleMenu()}>|||</MenuButton>}
+      <AddressBar
+        name={"toAddress"}
+        value={toAddress}
+        onChange={onInputChange}
+      />
+      <ExtendedButton value={"Pick Address"} onClick={onAddressSubmit} />
       <Map ref={mapRef} />
     </Sidebar>
   </Container>
