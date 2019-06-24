@@ -8,9 +8,11 @@ import { USER_PROFILE } from "src/sharedQueries";
 import { reportMovement, reportMovementVariables, userProfile } from "src/types/api";
 
 import HomePresenter from "./HomePresenter";
-import { REPORT_LOCATION } from "./HomeQueries";
+import { GET_NEARBY_DRIVERS, REPORT_LOCATION } from "./HomeQueries";
 
 class ProfileQuery extends Query<userProfile> {}
+
+class DriversQuery extends Query<getDrivers> {}
 
 interface IProps extends RouteComponentProps<any> {
   google: any;
@@ -64,17 +66,22 @@ class HomeContainer extends React.Component<IProps, IState> {
     const { isMenuOpen, toAddress, price } = this.state;
     return (
       <ProfileQuery query={USER_PROFILE}>
-        {({ loading }) => (
-          <HomePresenter
-            isMenuOpen={isMenuOpen}
-            toogleMenu={this.toogleMenu}
-            loading={loading}
-            mapRef={this.mapRef}
-            toAddress={toAddress}
-            onInputChange={this.onInputChange}
-            onAddressSubmit={this.onAddressSubmit}
-            price={price}
-          />
+        {({ data, loading }) => (
+          <DriversQuery query={GET_NEARBY_DRIVERS}>
+            {() => (
+              <HomePresenter
+                isMenuOpen={isMenuOpen}
+                toogleMenu={this.toogleMenu}
+                data={data}
+                loading={loading}
+                mapRef={this.mapRef}
+                toAddress={toAddress}
+                onInputChange={this.onInputChange}
+                onAddressSubmit={this.onAddressSubmit}
+                price={price}
+              />
+            )}
+          </DriversQuery>
         )}
       </ProfileQuery>
     );

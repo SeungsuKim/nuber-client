@@ -5,6 +5,7 @@ import AddressBar from "src/Components/AddressBar";
 import Button from "src/Components/Button";
 import Menu from "src/Components/Menu";
 import styled from "src/Styles/styled-components";
+import { userProfile } from "src/types/api";
 
 const Container = styled.div``;
 
@@ -47,6 +48,7 @@ const RequestButton = styled(ExtendedButton)`
 interface IProps {
   isMenuOpen: boolean;
   toogleMenu: () => void;
+  data?: userProfile;
   loading: boolean;
   mapRef: any;
   toAddress: string;
@@ -58,6 +60,9 @@ interface IProps {
 const HomePresenter: React.SFC<IProps> = ({
   isMenuOpen,
   toogleMenu,
+  data: { GetMyProfile: { user = null } = { user: null } } = {
+    GetMyProfile: { user: null }
+  },
   loading,
   mapRef,
   toAddress,
@@ -78,21 +83,25 @@ const HomePresenter: React.SFC<IProps> = ({
       }}
     >
       {!loading && <MenuButton onClick={() => toogleMenu()}>|||</MenuButton>}
-      <AddressBar
-        name={"toAddress"}
-        value={toAddress}
-        onChange={onInputChange}
-      />
+      {user && !user.isDriving && (
+        <>
+          <AddressBar
+            name={"toAddress"}
+            value={toAddress}
+            onChange={onInputChange}
+          />
+          <ExtendedButton
+            value={price ? "Chage Address" : "Pick Address"}
+            onClick={onAddressSubmit}
+          />
+        </>
+      )}
       {price && (
         <RequestButton
           value={`Request Ride ($${price})`}
           onClick={onAddressSubmit}
         />
       )}
-      <ExtendedButton
-        value={price ? "Chage Address" : "Pick Address"}
-        onClick={onAddressSubmit}
-      />
       <Map ref={mapRef} />
     </Sidebar>
   </Container>
