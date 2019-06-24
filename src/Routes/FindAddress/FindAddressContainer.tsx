@@ -59,6 +59,8 @@ class FindAddressContainer extends React.Component<IProps, IState> {
         lng
       },
       disableDefaultUI: true,
+      maxZoom: 17,
+      minZoom: 10,
       zoom: 15
     };
     this.map = new maps.Map(mapNode, mapConfig);
@@ -111,9 +113,14 @@ class FindAddressContainer extends React.Component<IProps, IState> {
     } as any);
   };
 
-  public onInputBlur = () => {
+  public onInputBlur = async () => {
     const { address } = this.state;
-    geoCode(address);
+    const location = await geoCode(address);
+    if (location) {
+      const { lat, lng, formatted_address } = location;
+      this.setState({ lat, lng, address: formatted_address });
+      this.map.panTo({ lat, lng });
+    }
   };
 }
 
