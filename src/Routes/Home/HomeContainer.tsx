@@ -54,6 +54,7 @@ class HomeContainer extends React.Component<IProps, IState> {
   constructor(props) {
     super(props);
     this.mapRef = React.createRef();
+    this.drivers = [];
   }
 
   public componentDidMount() {
@@ -71,6 +72,7 @@ class HomeContainer extends React.Component<IProps, IState> {
           return (
             <DriversQuery
               query={GET_NEARBY_DRIVERS}
+              pollInterval={1000}
               skip={
                 (data &&
                   data.GetMyProfile &&
