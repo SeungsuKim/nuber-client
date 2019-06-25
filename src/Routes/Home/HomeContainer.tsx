@@ -199,26 +199,40 @@ class HomeContainer extends React.Component<IProps, IState> {
         GetNearbyDrivers: { ok, drivers }
       } = data;
       if (ok && drivers) {
-        // tslint:disable-next-line
-        console.log(drivers);
         for (const driver of drivers) {
           if (driver) {
-            const markerOptions: google.maps.MarkerOptions = {
-              icon: {
-                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-                scale: 5
-              },
-              position: {
+            const existingDriver:
+              | google.maps.Marker
+              | undefined = this.drivers.find(
+              (driverMarker: google.maps.Marker) => {
+                const markerId = driverMarker.get("ID");
+                return markerId === driver.id;
+              }
+            );
+            if (existingDriver) {
+              existingDriver.setPosition({
                 lat: driver.lastLat,
                 lng: driver.lastLng
-              }
-            };
-            const newMarker: google.maps.Marker = new google.maps.Marker(
-              markerOptions
-            );
-            newMarker.setMap(this.map);
-            newMarker.set("ID", driver.id);
-            this.drivers.push(newMarker);
+              });
+              existingDriver.setMap(this.map);
+            } else {
+              const markerOptions: google.maps.MarkerOptions = {
+                icon: {
+                  path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                  scale: 5
+                },
+                position: {
+                  lat: driver.lastLat,
+                  lng: driver.lastLng
+                }
+              };
+              const newMarker: google.maps.Marker = new google.maps.Marker(
+                markerOptions
+              );
+              newMarker.setMap(this.map);
+              newMarker.set("ID", driver.id);
+              this.drivers.push(newMarker);
+            }
           }
         }
       }
