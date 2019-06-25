@@ -1,18 +1,27 @@
 import React from "react";
-import { graphql, MutationFn, Query } from "react-apollo";
+import { graphql, Mutation, MutationFn, Query } from "react-apollo";
 import ReactDOM from "react-dom";
 import { RouteComponentProps } from "react-router-dom";
 import { toast } from "react-toastify";
 import { geoCode } from "src/mapHelpers";
 import { USER_PROFILE } from "src/sharedQueries";
-import { getDrivers, reportMovement, reportMovementVariables, userProfile } from "src/types/api";
+import {
+  getDrivers,
+  reportMovement,
+  reportMovementVariables,
+  requestRide,
+  requestRideVariables,
+  userProfile
+} from "src/types/api";
 
 import HomePresenter from "./HomePresenter";
-import { GET_NEARBY_DRIVERS, REPORT_LOCATION } from "./HomeQueries";
+import { GET_NEARBY_DRIVERS, REPORT_LOCATION, REQUEST_RIDE } from "./HomeQueries";
 
 class ProfileQuery extends Query<userProfile> {}
 
 class DriversQuery extends Query<getDrivers> {}
+
+class RequestRideMutation extends Mutation<requestRide, requestRideVariables> {}
 
 interface IProps extends RouteComponentProps<any> {
   google: any;
@@ -26,6 +35,7 @@ interface IState {
   lat: number;
   lng: number;
   toAddress: string;
+  fromAddress: string;
   toLat: number;
   toLng: number;
   price?: number;
@@ -42,6 +52,7 @@ class HomeContainer extends React.Component<IProps, IState> {
   public state = {
     distance: "",
     duration: "",
+    fromAddress: "",
     isMenuOpen: false,
     lat: 0,
     lng: 0,
@@ -65,7 +76,18 @@ class HomeContainer extends React.Component<IProps, IState> {
   }
 
   public render() {
-    const { isMenuOpen, toAddress, price } = this.state;
+    const {
+      isMenuOpen,
+      toAddress,
+      price,
+      distance,
+      fromAddress,
+      lat,
+      lng,
+      toLat,
+      toLng,
+      duration
+    } = this.state;
     return (
       <ProfileQuery query={USER_PROFILE}>
         {({ data, loading }) => {
@@ -83,17 +105,35 @@ class HomeContainer extends React.Component<IProps, IState> {
               onCompleted={this.handleNearbyDrivers}
             >
               {() => (
-                <HomePresenter
-                  isMenuOpen={isMenuOpen}
-                  toogleMenu={this.toogleMenu}
-                  data={data}
-                  loading={loading}
-                  mapRef={this.mapRef}
-                  toAddress={toAddress}
-                  onInputChange={this.onInputChange}
-                  onAddressSubmit={this.onAddressSubmit}
-                  price={price}
-                />
+                <RequestRideMutation
+                  mutation={REQUEST_RIDE}
+                  variables={{
+                    distance,
+                    dropOffAddress: toAddress,
+                    dropOffLat: toLat,
+                    dropOffLng: toLng,
+                    duration,
+                    pickUpAddress: fromAddress,
+                    pickUpLat: lat,
+                    pickUpLng: lng,
+                    price: price || 0
+                  }}
+                >
+                  {requestRideFn => (
+                    <HomePresenter
+                      isMenuOpen={isMenuOpen}
+                      toogleMenu={this.toogleMenu}
+                      data={data}
+                      loading={loading}
+                      mapRef={this.mapRef}
+                      toAddress={toAddress}
+                      onInputChange={this.onInputChange}
+                      onAddressSubmit={this.onAddressSubmit}
+                      price={price}
+                      requestRideFn={requestRideFn}
+                    />
+                  )}
+                </RequestRideMutation>
               )}
             </DriversQuery>
           );
@@ -144,6 +184,8 @@ class HomeContainer extends React.Component<IProps, IState> {
     );
   };
 
+  public getFromAddress(lat: number, lng: number) {}
+
   public handleGeoSuccess: PositionCallback = (position: Position) => {
     const { reportLocation } = this.props;
     const {
@@ -154,6 +196,7 @@ class HomeContainer extends React.Component<IProps, IState> {
       lng
     });
     this.loadMap(lat, lng);
+    this.getFromAddress(lat, lng);
     reportLocation({ variables: { lat, lng } });
   };
 
