@@ -3,10 +3,11 @@ import { graphql, Mutation, MutationFn, Query } from "react-apollo";
 import ReactDOM from "react-dom";
 import { RouteComponentProps } from "react-router-dom";
 import { toast } from "react-toastify";
-import { geoCode } from "src/mapHelpers";
+import { geoCode, reverseGeoCode } from "src/mapHelpers";
 import { USER_PROFILE } from "src/sharedQueries";
 import {
   getDrivers,
+  getNearbyRide,
   reportMovement,
   reportMovementVariables,
   requestRide,
@@ -15,11 +16,13 @@ import {
 } from "src/types/api";
 
 import HomePresenter from "./HomePresenter";
-import { GET_NEARBY_DRIVERS, REPORT_LOCATION, REQUEST_RIDE } from "./HomeQueries";
+import { GET_NEARBY_DRIVERS, GET_NEARBY_RIDE, REPORT_LOCATION, REQUEST_RIDE } from "./HomeQueries";
 
 class ProfileQuery extends Query<userProfile> {}
 
 class DriversQuery extends Query<getDrivers> {}
+
+class GetNearByRide extends Query<getNearbyRide> {}
 
 class RequestRideMutation extends Mutation<requestRide, requestRideVariables> {}
 
@@ -39,6 +42,7 @@ interface IState {
   toLat: number;
   toLng: number;
   price?: number;
+  isDriving: boolean;
 }
 
 class HomeContainer extends React.Component<IProps, IState> {
@@ -53,6 +57,7 @@ class HomeContainer extends React.Component<IProps, IState> {
     distance: "",
     duration: "",
     fromAddress: "",
+    isDriving: true,
     isMenuOpen: false,
     lat: 0,
     lng: 0,
@@ -86,22 +91,17 @@ class HomeContainer extends React.Component<IProps, IState> {
       lng,
       toLat,
       toLng,
-      duration
+      duration,
+      isDriving
     } = this.state;
     return (
-      <ProfileQuery query={USER_PROFILE}>
+      <ProfileQuery query={USER_PROFILE} onCompleted={this.handleProfileQuery}>
         {({ data, loading }) => {
           return (
             <DriversQuery
               query={GET_NEARBY_DRIVERS}
               pollInterval={1000}
-              skip={
-                (data &&
-                  data.GetMyProfile &&
-                  data.GetMyProfile.user &&
-                  data.GetMyProfile.user.isDriving) ||
-                false
-              }
+              skip={isDriving}
               onCompleted={this.handleNearbyDrivers}
             >
               {() => (
@@ -118,20 +118,26 @@ class HomeContainer extends React.Component<IProps, IState> {
                     pickUpLng: lng,
                     price: price || 0
                   }}
+                  onCompleted={this.handleRideRequest}
                 >
                   {requestRideFn => (
-                    <HomePresenter
-                      isMenuOpen={isMenuOpen}
-                      toogleMenu={this.toogleMenu}
-                      data={data}
-                      loading={loading}
-                      mapRef={this.mapRef}
-                      toAddress={toAddress}
-                      onInputChange={this.onInputChange}
-                      onAddressSubmit={this.onAddressSubmit}
-                      price={price}
-                      requestRideFn={requestRideFn}
-                    />
+                    <GetNearByRide query={GET_NEARBY_RIDE} skip={isDriving}>
+                      {({ data: nearbyRide }) => (
+                        <HomePresenter
+                          isMenuOpen={isMenuOpen}
+                          toogleMenu={this.toogleMenu}
+                          data={data}
+                          loading={loading}
+                          mapRef={this.mapRef}
+                          toAddress={toAddress}
+                          onInputChange={this.onInputChange}
+                          onAddressSubmit={this.onAddressSubmit}
+                          price={price}
+                          requestRideFn={requestRideFn}
+                          nearbyRide={nearbyRide}
+                        />
+                      )}
+                    </GetNearByRide>
                   )}
                 </RequestRideMutation>
               )}
@@ -184,7 +190,14 @@ class HomeContainer extends React.Component<IProps, IState> {
     );
   };
 
-  public getFromAddress(lat: number, lng: number) {}
+  public getFromAddress = async (lat: number, lng: number) => {
+    const address = await reverseGeoCode(lat, lng);
+    if (address) {
+      this.setState({
+        fromAddress: address
+      });
+    }
+  };
 
   public handleGeoSuccess: PositionCallback = (position: Position) => {
     const { reportLocation } = this.props;
@@ -279,6 +292,25 @@ class HomeContainer extends React.Component<IProps, IState> {
           }
         }
       }
+    }
+  };
+
+  public handleRideRequest = (data: requestRide) => {
+    const { RequestRide } = data;
+    if (RequestRide.ok) {
+      toast.success("Drive reqeusted, finding a driver");
+    } else {
+      toast.error(RequestRide.error);
+    }
+  };
+
+  public handleProfileQuery = (data: userProfile) => {
+    const { GetMyProfile } = data;
+    if (GetMyProfile.user) {
+      const { isDriving } = GetMyProfile.user;
+      this.setState({
+        isDriving
+      });
     }
   };
 

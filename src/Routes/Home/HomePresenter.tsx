@@ -6,7 +6,7 @@ import AddressBar from "src/Components/AddressBar";
 import Button from "src/Components/Button";
 import Menu from "src/Components/Menu";
 import styled from "src/Styles/styled-components";
-import { userProfile } from "src/types/api";
+import { getNearbyRide, userProfile } from "src/types/api";
 
 const Container = styled.div``;
 
@@ -57,6 +57,7 @@ interface IProps {
   onAddressSubmit: () => void;
   price?: number;
   requestRideFn: MutationFn;
+  nearbyRide?: getNearbyRide;
 }
 
 const HomePresenter: React.SFC<IProps> = ({
